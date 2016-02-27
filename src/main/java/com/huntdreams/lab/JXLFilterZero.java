@@ -60,36 +60,36 @@ public class JXLFilterZero extends Processor {
             WritableWorkbook wwb = Workbook.createWorkbook(new FileOutputStream(new File(outFile)));
             Sheet[] readSheetList = readWb.getSheets();
             for (int sheetIndex = 2, sheetSize = readSheetList.length;
-                 sheetIndex < sheetSize; sheetIndex ++) {
-                 //获取读Sheet表
-                 Sheet readwbSheet = readWb.getSheet(sheetIndex);
-                 String sheetName = readwbSheet.getName();
-                 //创建工作表
-                 WritableSheet ws = wwb.createSheet(sheetName, sheetIndex - 2);
-                 //获取Sheet表中所包含的总列数
-                 int rsColumns = readwbSheet.getColumns();
-                 //获取Sheet表中所包含的总行数
-                 //int rsRows = readwbSheet.getRows();
-                int rsRows = MAX_ROW;
-                 logger.debug("read sheet : " + sheetName + " -> Columns = " + rsColumns + ", Rows = " + rsRows);
+                 sheetIndex < sheetSize; sheetIndex++) {
+                //获取读Sheet表
+                Sheet readwbSheet = readWb.getSheet(sheetIndex);
+                String sheetName = readwbSheet.getName();
+                //创建工作表
+                WritableSheet ws = wwb.createSheet(sheetName, sheetIndex - 2);
+                //获取Sheet表中所包含的总列数
+                int rsColumns = readwbSheet.getColumns();
+                //获取Sheet表中所包含的总行数
+                //int rsRows = readwbSheet.getRows();
+                int rsRows = readwbSheet.getRows();
+                logger.debug("read sheet : " + sheetName + " -> Columns = " + rsColumns + ", Rows = " + rsRows);
 
-                 //获取指定单元格的对象引用
-                 for (int i = 0; i < rsRows; i++) {
-                     for (int j = 0; j < rsColumns; j++) {
-                         Cell cell = readwbSheet.getCell(j, i);
-                         String value = cell.getContents();
-                         if (value.equals("")) {
-                         //    logger.debug("value is null");
-                         }
-                         if (value.equals("0 0")) {
-                             value = getMostFrequentGen(readwbSheet, j);
-                             logger.debug("00 --> " + value);
-                         }
-                         //写入Excel
-                         Label label = new Label(j, i, value);
-                         ws.addCell(label);
-                     }
-                 }
+                //获取指定单元格的对象引用
+                for (int i = 0; i < rsRows; i++) {
+                    for (int j = 0; j < rsColumns; j++) {
+                        Cell cell = readwbSheet.getCell(j, i);
+                        String value = cell.getContents();
+                        if (value.equals("")) {
+                            logger.debug("value is null");
+                        }
+                        if (value.equals("0 0")) {
+                            value = getMostFrequentGen(readwbSheet, j);
+                            logger.debug("00 --> " + value);
+                        }
+                        //写入Excel
+                        Label label = new Label(j, i, value);
+                        ws.addCell(label);
+                    }
+                }
                 logger.debug("ws.getColumns() = " + ws.getColumns());
                 logger.debug("ws.getRows() = " + ws.getRows());
             }
@@ -108,20 +108,20 @@ public class JXLFilterZero extends Processor {
      * 获得某列基因出现次数最多的基因
      *
      * @param sheet sheet
-     * @param col 列数
+     * @param col   列数
      * @return
      */
     private String getMostFrequentGen(Sheet sheet, int col) {
         // 每列某个基因出现的次数
         Map<String, Integer> frqMap = new HashMap<String, Integer>();
         int rsCols = sheet.getColumns();
-        int rsRows = MAX_ROW;
+        int rsRows = sheet.getRows();
         // 统计次数
         for (int row = 0; row < rsRows; row++) {
             Cell cell = sheet.getCell(col, row);
             String key = cell.getContents();
             if (key.equals("")) {
-            //    logger.debug("key in get... : " + key);
+                logger.debug("key in getMostFrequentGen : " + key);
             }
             Integer oldVal = frqMap.get(key);
             if (oldVal == null) {
@@ -137,7 +137,7 @@ public class JXLFilterZero extends Processor {
             Map.Entry entry = (Map.Entry) iter.next();
             String key = (String) entry.getKey();
             if (key.equals("")) {
-            //    logger.debug(key + "is null");
+                logger.debug(key + "is null");
             }
             Integer value = (Integer) entry.getValue();
             if (value > max) {
@@ -150,7 +150,7 @@ public class JXLFilterZero extends Processor {
 
     public static void main(String[] args) {
         JXLFilterZero JXLFilterZero = new JXLFilterZero();
-   //     JXLFilterZero.init();
+        // JXLFilterZero.init();
         JXLFilterZero.run();
     }
 }

@@ -1,4 +1,4 @@
-package com.huntdreams.lab;
+package com.huntdreams.lab.filter;
 
 import org.apache.log4j.Logger;
 

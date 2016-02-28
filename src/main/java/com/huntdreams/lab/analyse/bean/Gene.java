@@ -16,6 +16,8 @@ public class Gene {
     //该基因的位点
     private ArrayList<SNP> snpList;
 
+    private Integer snpCount;
+
     public String getName() {
         return name;
     }
@@ -30,5 +32,13 @@ public class Gene {
 
     public void setSnpList(ArrayList<SNP> snpList) {
         this.snpList = snpList;
+    }
+
+    public Integer getSnpCount() {
+        return snpCount;
+    }
+
+    public void setSnpCount(Integer snpCount) {
+        this.snpCount = snpCount;
     }
 }

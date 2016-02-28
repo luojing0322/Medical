@@ -18,14 +18,14 @@ import java.io.InputStream;
 import java.util.ArrayList;
 
 /**
- * RatioProcessor
+ * XSLProcessor
  * 计算每个基因患病的概率
  * 基因总数:38
  * <p/>
  * Author: Noprom <tyee.noprom@qq.com>
  * Date: 2/28/16 2:41 PM.
  */
-public class RatioProcessor extends Processor {
+public class XSLProcessor extends Processor {
 
     private final String baseFile = docPath + "/ratio/cal_ratio.xls";
     private final String outFile = docPath + "/ratio/out_cal_ratio.xls";
@@ -306,7 +306,7 @@ public class RatioProcessor extends Processor {
 
 
     public static void main(String[] args) {
-        RatioProcessor ratioProcessor = new RatioProcessor();
-        ratioProcessor.printCondition();
+        XSLProcessor XSLProcessor = new XSLProcessor();
+        XSLProcessor.printCondition();
     }
 }

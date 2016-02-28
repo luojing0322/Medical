@@ -41,4 +41,19 @@ public class Gene {
     public void setSnpCount(Integer snpCount) {
         this.snpCount = snpCount;
     }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+
+        for (SNP snp : getSnpList()) {
+            builder.append(snp.getValue() + ",");
+        }
+
+        return "Gene{" +
+                "name='" + name + '\'' +
+                ", snpList=" + builder.toString() +
+                ", snpCount=" + snpCount +
+                '}';
+    }
 }

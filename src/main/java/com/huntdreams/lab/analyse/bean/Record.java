@@ -16,7 +16,7 @@ public class Record {
 
     private Boolean ill;//是否患病
     private SEX sex;//性别
-    private ArrayList<Gene> genes;//基因
+    private ArrayList<Gene> geneList;//基因
 
     public Boolean getIll() {
         return ill;
@@ -34,11 +34,11 @@ public class Record {
         this.sex = sex;
     }
 
-    public ArrayList<Gene> getGenes() {
-        return genes;
+    public ArrayList<Gene> getGeneList() {
+        return geneList;
     }
 
-    public void setGenes(ArrayList<Gene> genes) {
-        this.genes = genes;
+    public void setGeneList(ArrayList<Gene> geneList) {
+        this.geneList = geneList;
     }
 }

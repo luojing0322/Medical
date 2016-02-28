@@ -14,7 +14,7 @@ public class Gene {
     private String name;
 
     //该基因的位点
-    private ArrayList<SNP> snps;
+    private ArrayList<SNP> snpList;
 
     public String getName() {
         return name;
@@ -24,11 +24,11 @@ public class Gene {
         this.name = name;
     }
 
-    public ArrayList<SNP> getSnps() {
-        return snps;
+    public ArrayList<SNP> getSnpList() {
+        return snpList;
     }
 
-    public void setSnps(ArrayList<SNP> snps) {
-        this.snps = snps;
+    public void setSnpList(ArrayList<SNP> snpList) {
+        this.snpList = snpList;
     }
 }

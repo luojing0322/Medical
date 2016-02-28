@@ -22,8 +22,8 @@ import java.util.*;
  */
 public class JXLFilterZero extends Processor {
 
-    private final String baseFile = docPath + "/in_filter_00.xls";
-    private final String outFile = docPath + "/out_filter_00.xls";
+    private final String baseFile = docPath + "/filter/in_filter_00.xls";
+    private final String outFile = docPath + "/filter/out_filter_00.xls";
     private final Integer MAX_ROW = 233;
 
     // 不扫描的列

@@ -1,4 +1,4 @@
-package com.huntdreams.lab.filter;
+package com.huntdreams.lab.module.gene.filter;
 
 import jxl.Cell;
 import jxl.Sheet;

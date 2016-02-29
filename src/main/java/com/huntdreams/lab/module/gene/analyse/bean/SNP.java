@@ -1,4 +1,4 @@
-package com.huntdreams.lab.analyse.bean;
+package com.huntdreams.lab.module.gene.analyse.bean;
 
 /**
  * SNP 位点

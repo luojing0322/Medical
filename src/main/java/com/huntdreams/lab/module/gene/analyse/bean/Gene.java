@@ -1,4 +1,4 @@
-package com.huntdreams.lab.analyse.bean;
+package com.huntdreams.lab.module.gene.analyse.bean;
 
 import java.util.ArrayList;
 
@@ -40,6 +40,18 @@ public class Gene {
 
     public void setSnpCount(Integer snpCount) {
         this.snpCount = snpCount;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof Gene)) {
+            return false;
+        }
+        Gene that = (Gene) obj;
+        if (!that.getName().equals(getName())) {
+            return false;
+        }
+        return true;
     }
 
     @Override

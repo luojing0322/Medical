@@ -1,5 +1,6 @@
-package com.huntdreams.lab.filter;
+package com.huntdreams.lab.module.gene.filter;
 
+import com.huntdreams.lab.common.BaseProcessor;
 import jxl.Cell;
 import jxl.Sheet;
 import jxl.Workbook;
@@ -20,7 +21,7 @@ import java.util.*;
  * @author tyee.noprom@qq.com
  * @time 2/18/16 12:14 PM.
  */
-public class JXLFilterZero extends Processor {
+public class JXLFilterZero extends BaseProcessor {
 
     private final String baseFile = docPath + "/filter/in_filter_00.xls";
     private final String outFile = docPath + "/filter/out_filter_00.xls";

@@ -1,9 +1,9 @@
-package com.huntdreams.lab.analyse.processor;
+package com.huntdreams.lab.module.gene.analyse.processor;
 
-import com.huntdreams.lab.analyse.bean.Gene;
-import com.huntdreams.lab.analyse.bean.Record;
-import com.huntdreams.lab.analyse.bean.SNP;
-import com.huntdreams.lab.filter.Processor;
+import com.huntdreams.lab.common.BaseProcessor;
+import com.huntdreams.lab.module.gene.analyse.bean.Gene;
+import com.huntdreams.lab.module.gene.analyse.bean.Record;
+import com.huntdreams.lab.module.gene.analyse.bean.SNP;
 import jxl.Cell;
 import jxl.Sheet;
 import jxl.Workbook;
@@ -18,14 +18,14 @@ import java.io.InputStream;
 import java.util.ArrayList;
 
 /**
- * XSLProcessor
+ * XSLBaseProcessor
  * 计算每个基因患病的概率
  * 基因总数:38
  * <p/>
  * Author: Noprom <tyee.noprom@qq.com>
  * Date: 2/28/16 2:41 PM.
  */
-public class XSLProcessor extends Processor {
+public class XSLBaseProcessor extends BaseProcessor {
 
     private final String baseFile = docPath + "/ratio/cal_ratio.xls";
     private final String outFile = docPath + "/ratio/out_cal_ratio.xls";
@@ -306,7 +306,7 @@ public class XSLProcessor extends Processor {
 
 
     public static void main(String[] args) {
-        XSLProcessor XSLProcessor = new XSLProcessor();
+        XSLBaseProcessor XSLProcessor = new XSLBaseProcessor();
         XSLProcessor.printCondition();
     }
 }

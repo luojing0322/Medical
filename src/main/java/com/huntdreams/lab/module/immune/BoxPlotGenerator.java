@@ -11,6 +11,7 @@ import jxl.write.WritableWorkbook;
 import jxl.write.WriteException;
 import jxl.write.biff.RowsExceededException;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.xwpf.usermodel.Document;
 
 import java.io.*;
 import java.math.BigDecimal;
@@ -28,6 +29,7 @@ public class BoxPlotGenerator extends BaseProcessor {
 
     private String baseFile = docPath + "/immune/immune.xls";
     private String outBoxPlotFile = docPath + "/immune/out_immune.xls";
+    private String outRegressionFile = docPath + "/immune/out_reg_immune.xls";
     private static boolean DEBUG = false;
 
     /**
@@ -212,6 +214,85 @@ public class BoxPlotGenerator extends BaseProcessor {
     }
 
     /**
+     * 对数据进行归一化处理
+     * 使其在0-100之间均匀分布
+     */
+    private void regData() {
+        Workbook readWb = null;
+        try {
+            // 构建Workbook对象, 只读Workbook对象
+            // 直接从本地文件创建Workbook
+            InputStream readInputStream = new FileInputStream(outBoxPlotFile);
+            WritableWorkbook wwb = Workbook.createWorkbook(new FileOutputStream(new File(outRegressionFile)));
+            WritableSheet ws = wwb.createSheet("regboxplot", 0);
+            readWb = Workbook.getWorkbook(readInputStream);
+            Integer sheetIndex = 0;
+            // 获取读Sheet表
+            Sheet readSheet = readWb.getSheet(sheetIndex);
+            String sheetName = readSheet.getName();
+            // 获取Sheet表中所包含的总列数
+            int rsColumns = readSheet.getColumns();
+            // 获取Sheet表中所包含的总行数
+            int rsRows = readSheet.getRows();
+            for (int i = 0; i < rsRows; i++) {
+                for (int j = 0; j < rsColumns; j++) {
+                    String cellVal = readSheet.getCell(j, i).getContents();
+                    String regCellVal = null;
+                    if (i != 0) {
+                        regCellVal = getRegVal(readSheet, cellVal, j);
+                    }
+                    Label label = new Label(j, i, i == 0 ? cellVal : regCellVal);
+                    ws.addCell(label);
+                }
+            }
+            //写入Excel对象
+            wwb.write();
+            wwb.close();
+        } catch (BiffException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (RowsExceededException e) {
+            e.printStackTrace();
+        } catch (WriteException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 获得某一列归一化之后的值
+     *
+     * @param readSheet
+     * @param col
+     * @return
+     */
+    private String getRegVal(Sheet readSheet, String rawStr, int col) {
+        // 获取Sheet表中所包含的总列数
+        int rsColumns = readSheet.getColumns();
+        // 获取Sheet表中所包含的总行数
+        int rsRows = readSheet.getRows();
+        double max = -1.0;
+        double min = 10000.0;
+        // 计算得到最大最小值
+        for (int i = 1; i < rsRows; i++) {
+            String cellValStr = readSheet.getCell(col, i).getContents();
+            double cellVal = Double.parseDouble(cellValStr);
+            if (cellVal > max) {
+                max = cellVal;
+            }
+            if (cellVal < min) {
+                min = cellVal;
+            }
+        }
+        double rawVal = Double.parseDouble(rawStr);
+        // 方法一:
+        // Double newVal = rawVal / max * 100;
+        // 方法二:
+        Double newVal = (rawVal - min) / (max - min) * 100;
+        return rawStr;
+    }
+
+    /**
      * 过滤不满足条件的值
      *
      * @param str
@@ -260,6 +341,6 @@ public class BoxPlotGenerator extends BaseProcessor {
 
     public static void main(String[] args) {
         BoxPlotGenerator generator = new BoxPlotGenerator();
-        generator.parseXSLFile();
+        generator.regData();
     }
 }

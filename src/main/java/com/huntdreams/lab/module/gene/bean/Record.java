@@ -1,4 +1,4 @@
-package com.huntdreams.lab.module.gene.analyse.bean;
+package com.huntdreams.lab.module.gene.bean;
 
 import java.util.ArrayList;
 

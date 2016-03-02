@@ -1,7 +1,7 @@
-package com.huntdreams.lab.module.gene.analyse.processor;
+package com.huntdreams.lab.module.gene.processor;
 
 import com.huntdreams.lab.common.BaseProcessor;
-import com.huntdreams.lab.module.gene.analyse.bean.Gene;
+import com.huntdreams.lab.module.gene.bean.Gene;
 import com.huntdreams.lab.util.CSVFileUtil;
 
 import java.io.IOException;

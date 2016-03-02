@@ -1,9 +1,9 @@
-package com.huntdreams.lab.module.gene.analyse.processor;
+package com.huntdreams.lab.module.gene.processor;
 
 import com.huntdreams.lab.common.BaseProcessor;
-import com.huntdreams.lab.module.gene.analyse.bean.Gene;
-import com.huntdreams.lab.module.gene.analyse.bean.Record;
-import com.huntdreams.lab.module.gene.analyse.bean.SNP;
+import com.huntdreams.lab.module.gene.bean.Gene;
+import com.huntdreams.lab.module.gene.bean.Record;
+import com.huntdreams.lab.module.gene.bean.SNP;
 import jxl.Cell;
 import jxl.Sheet;
 import jxl.Workbook;

@@ -1,4 +1,4 @@
-package com.huntdreams.lab.module.gene.filter;
+package com.huntdreams.lab.module.gene.processor;
 
 import com.huntdreams.lab.common.BaseProcessor;
 import org.apache.poi.xssf.usermodel.XSSFCell;
@@ -19,16 +19,20 @@ import java.io.InputStream;
  * @author tyee.noprom@qq.com
  * @time 2/18/16 2:49 PM.
  */
-public class POIFilterZoer extends BaseProcessor {
+public class PoiProcessor extends BaseProcessor {
 
-    private final String baseFile = docPath + "/ratio/read_by_poi.xlsx";
-    private final String outFile = docPath + "/ratio/out_by_poi.xlsx";
-    private final String poiOutFile = docPath + "/ratio/out_by_poi.xlsx";
+    private final String baseFile = docPath + "/gene/analyse/read_by_poi.xlsx";
 
     private void process() throws IOException {
         readXlsx(baseFile);
     }
 
+    /**
+     * 读取xlsx文件案例
+     *
+     * @param path
+     * @throws IOException
+     */
     public void readXlsx(String path) throws IOException {
         InputStream is = new FileInputStream(path);
         XSSFWorkbook xssfWorkbook = new XSSFWorkbook(is);
@@ -53,6 +57,12 @@ public class POIFilterZoer extends BaseProcessor {
         }
     }
 
+    /**
+     * 获取某个cell的值
+     *
+     * @param xssfRow row
+     * @return 值
+     */
     private String getValue(XSSFCell xssfRow) {
         if (xssfRow.getCellType() == xssfRow.CELL_TYPE_BOOLEAN) {
             return String.valueOf(xssfRow.getBooleanCellValue());
@@ -65,7 +75,7 @@ public class POIFilterZoer extends BaseProcessor {
 
 
     public static void main(String[] args) throws IOException {
-        POIFilterZoer poiFilterZoer = new POIFilterZoer();
+        PoiProcessor poiFilterZoer = new PoiProcessor();
         poiFilterZoer.process();
     }
 }

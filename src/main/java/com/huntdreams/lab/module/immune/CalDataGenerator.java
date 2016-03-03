@@ -1,6 +1,7 @@
 package com.huntdreams.lab.module.immune;
 
 import com.huntdreams.lab.common.BaseProcessor;
+import com.sun.org.apache.bcel.internal.generic.ASTORE;
 import jxl.Sheet;
 import jxl.Workbook;
 
@@ -21,12 +22,17 @@ public class CalDataGenerator extends BaseProcessor {
     private String baseFile = docPath + "/immune/immune.xls";
     private String areaStaticsOutFile = docPath + "/immune/immune_area.txt";
     private String agStaticsOutFile = docPath + "/immune/immune_ag.txt";
+    private String astStaticsOutFile = docPath + "/immune/immune_ast.txt";
 
     /* 区域统计数据 */
     private Map<String, Integer> areaStatics = new HashMap<String, Integer>();
 
     /* A/G 统计数据 */
     private Map<String, Integer> agStatics = new HashMap<String, Integer>();
+
+    /* AST 统计数据 */
+    private Map<String, Integer> astStatics = new HashMap<String, Integer>();
+
 
     /**
      * 初始化地区统计信息
@@ -179,6 +185,56 @@ public class CalDataGenerator extends BaseProcessor {
     }
 
     /**
+     * 获得AST的统计数据
+     *
+     * @return
+     */
+    private Map<String, Integer> getAstStatics() {
+        Workbook readWb = null;
+        try {
+            // 直接从本地文件创建Workbook
+            InputStream readInputStream = new FileInputStream(baseFile);
+            readWb = Workbook.getWorkbook(readInputStream);
+            Integer sheetIndex = 1;
+            // 获取读Sheet表
+            Sheet readSheet = readWb.getSheet(sheetIndex);
+            Integer factorCol = getFactorCol(readSheet, "AST");//因子所在的列
+            // 获取Sheet表中所包含的总列数
+            int rsColumns = readSheet.getColumns();
+            // 获取Sheet表中所包含的总行数
+            int rsRows = readSheet.getRows();
+            // 统计次数
+            for (int row = 1; row < rsRows; row++) {
+                String str = readSheet.getCell(factorCol, row).getContents();
+                Integer rawVal = astStatics.get(str) == null ? 0 : astStatics.get(str);
+                astStatics.put(str, rawVal + 1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            readWb.close();
+        }
+        return astStatics;
+    }
+
+    /**
+     * 将A/G统计结果写入文件
+     *
+     */
+    private void writeASTStatics() {
+        astStatics = getAstStatics();
+        writeFactorStatics(astStatics, astStaticsOutFile, "AST", "Count", false);
+    }
+
+    /**
+     * 计算AG超出的值
+     */
+    private void calASTFreqnenct() {
+        agStatics = getAgStatics();
+        calFrequency(agStatics, 10);
+    }
+
+    /**
      * 获得A/G的统计数据
      *
      * @return
@@ -306,6 +362,6 @@ public class CalDataGenerator extends BaseProcessor {
 
     public static void main(String[] args) {
         CalDataGenerator calDataGenerator = new CalDataGenerator();
-        calDataGenerator.calAGFreqnenct();
+        calDataGenerator.writeASTStatics();
     }
 }

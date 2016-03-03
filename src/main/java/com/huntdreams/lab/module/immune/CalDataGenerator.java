@@ -136,10 +136,12 @@ public class CalDataGenerator extends BaseProcessor {
 
         try {
             FileWriter writer = new FileWriter(areaStaticsOutFile);
+            writer.write("area" + "\t" + "areaCnt" + "\n");
             for (Map.Entry<String, Integer> entry : areaInfo) {
                 String area = entry.getKey();
                 Integer areaCnt = entry.getValue();
-                writer.write(area + "\t" + areaCnt + "\n");
+                if (areaCnt > 0)
+                    writer.write(area + "\t" + areaCnt + "\n");
             }
             writer.close();
         } catch (IOException e) {

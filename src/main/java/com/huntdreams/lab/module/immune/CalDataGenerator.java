@@ -11,7 +11,7 @@ import java.io.InputStream;
 import java.util.*;
 
 /**
- * CalDataGenerator 技术类
+ * CalDataGenerator 计数类
  * <p/>
  * Author: Noprom <tyee.noprom@qq.com>
  * Date: 3/3/16 1:39 PM.
@@ -83,14 +83,38 @@ public class CalDataGenerator extends BaseProcessor {
     }
 
     /**
+     * 将数字换算成比例
+     */
+    private Map<String, Double> countAreasRatio() {
+        Iterator iter = areaStatics.entrySet().iterator();
+        Integer allPeople = 0;
+        while (iter.hasNext()) {
+            Map.Entry entry = (Map.Entry) iter.next();
+            String area = (String) entry.getKey();
+            Integer areaCnt = (Integer) entry.getValue();
+            allPeople += areaCnt;
+        }
+        iter = areaStatics.entrySet().iterator();
+        // 换算成比例
+        Map<String, Double> areaStaticsRatio = new HashMap<String, Double>();
+        while (iter.hasNext()) {
+            Map.Entry entry = (Map.Entry) iter.next();
+            String area = (String) entry.getKey();
+            Integer areaCnt = (Integer) entry.getValue();
+            areaStaticsRatio.put(area, 100 * (1.0 * areaCnt / allPeople));
+        }
+        return areaStaticsRatio;
+    }
+
+    /**
      * 获得地区的数据
      *
      * @return
      */
-    private Map<String, Integer> getAreaStatics() {
+    private Map<String, Double> getAreaStatics() {
         // 初始化
         this.initAreas();
-
+        Map<String, Double> areaStaticsRatio = new HashMap<String, Double>();
         // 统计地区出现次数
         Workbook readWb = null;
         try {
@@ -111,35 +135,36 @@ public class CalDataGenerator extends BaseProcessor {
                 String areaStr = readSheet.getCell(areaCol, row).getContents();
                 this.countAreas(areaStr);
             }
+            // 换算成比例
+            areaStaticsRatio = countAreasRatio();
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
             readWb.close();
         }
-        return areaStatics;
+        return areaStaticsRatio;
     }
 
     /**
      * 生成区域统计数据
      */
     private void geneAreaStatics() {
-        this.areaStatics = getAreaStatics();
-        List<Map.Entry<String, Integer>> areaInfo =
-                new ArrayList<Map.Entry<String, Integer>>(areaStatics.entrySet());
+        Map<String, Double> areaStaticsRatio = getAreaStatics();
+        List<Map.Entry<String, Double>> areaInfo =
+                new ArrayList<Map.Entry<String, Double>>(areaStaticsRatio.entrySet());
         //排序
-        Collections.sort(areaInfo, new Comparator<Map.Entry<String, Integer>>() {
-            public int compare(Map.Entry<String, Integer> o1, Map.Entry<String, Integer> o2) {
-                return (o2.getValue() - o1.getValue());
-                // return (o1.getKey()).toString().compareTo(o2.getKey());
+        Collections.sort(areaInfo, new Comparator<Map.Entry<String, Double>>() {
+            public int compare(Map.Entry<String, Double> o1, Map.Entry<String, Double> o2) {
+                return (o2.getValue() - o1.getValue()) >= 0 ? 1 : -1;
             }
         });
 
         try {
             FileWriter writer = new FileWriter(areaStaticsOutFile);
             writer.write("area" + "\t" + "areaCnt" + "\n");
-            for (Map.Entry<String, Integer> entry : areaInfo) {
+            for (Map.Entry<String, Double> entry : areaInfo) {
                 String area = entry.getKey();
-                Integer areaCnt = entry.getValue();
+                Double areaCnt = entry.getValue();
                 if (areaCnt > 0)
                     writer.write(area + "\t" + areaCnt + "\n");
             }

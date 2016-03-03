@@ -20,9 +20,13 @@ public class CalDataGenerator extends BaseProcessor {
 
     private String baseFile = docPath + "/immune/immune.xls";
     private String areaStaticsOutFile = docPath + "/immune/immune_area.txt";
+    private String agStaticsOutFile = docPath + "/immune/immune_ag.txt";
 
     /* 区域统计数据 */
     private Map<String, Integer> areaStatics = new HashMap<String, Integer>();
+
+    /* A/G 统计数据 */
+    private Map<String, Integer> agStatics = new HashMap<String, Integer>();
 
     /**
      * 初始化地区统计信息
@@ -174,8 +178,134 @@ public class CalDataGenerator extends BaseProcessor {
         }
     }
 
+    /**
+     * 获得A/G的统计数据
+     *
+     * @return
+     */
+    private Map<String, Integer> getAgStatics() {
+        Workbook readWb = null;
+        try {
+            // 直接从本地文件创建Workbook
+            InputStream readInputStream = new FileInputStream(baseFile);
+            readWb = Workbook.getWorkbook(readInputStream);
+            Integer sheetIndex = 1;
+            // 获取读Sheet表
+            Sheet readSheet = readWb.getSheet(sheetIndex);
+            Integer factorCol = getFactorCol(readSheet, "A/G");//因子所在的列
+            // 获取Sheet表中所包含的总列数
+            int rsColumns = readSheet.getColumns();
+            // 获取Sheet表中所包含的总行数
+            int rsRows = readSheet.getRows();
+            // 统计次数
+            for (int row = 1; row < rsRows; row++) {
+                String str = readSheet.getCell(factorCol, row).getContents();
+                Integer rawVal = agStatics.get(str) == null ? 0 : agStatics.get(str);
+                agStatics.put(str, rawVal + 1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            readWb.close();
+        }
+        return agStatics;
+    }
+
+    /**
+     * 将A/G统计结果写入文件
+     *
+     */
+    private void writeAGStatics() {
+        agStatics = getAgStatics();
+        writeFactorStatics(agStatics, agStaticsOutFile, "AG", "Count", false);
+    }
+
+    /**
+     * 计算AG超出的值
+     */
+    private void calAGFreqnenct() {
+        agStatics = getAgStatics();
+        calFrequency(agStatics, 10);
+    }
+
+    /**
+     * 计算超过某个值的频次
+     *
+     * @param factor
+     * @param threshold
+     */
+    private void calFrequency(Map<String, Integer> factor, Integer threshold) {
+        Iterator iter = factor.entrySet().iterator();
+        Integer facCnt = 0;
+        while (iter.hasNext()) {
+            Map.Entry entry = (Map.Entry) iter.next();
+            String entryKey = (String) entry.getKey();
+            Integer entryValue = (Integer) entry.getValue();
+            if (entryValue >= threshold)
+                facCnt += 1;
+        }
+        System.out.println("> " + threshold + " = " + facCnt);
+    }
+
+    /**
+     * 将因子统计结果写入文件
+     *
+     * @param factor 因子
+     * @param key 因子名
+     * @param value 因子值
+     */
+    private void writeFactorStatics(Map<String, Integer> factor, String fileName,
+                                    String key, String value, boolean showHeader) {
+        List<Map.Entry<String, Integer>> facInfo =
+                new ArrayList<Map.Entry<String, Integer>>(factor.entrySet());
+        //排序
+        Collections.sort(facInfo, new Comparator<Map.Entry<String, Integer>>() {
+            public int compare(Map.Entry<String, Integer> o1, Map.Entry<String, Integer> o2) {
+                // return (o2.getValue() - o1.getValue());
+                return o1.getKey().compareTo(o2.getKey());
+            }
+        });
+
+        try {
+            FileWriter writer = new FileWriter(fileName);
+            if (showHeader)
+                writer.write(key + "\t" + value + "\n");
+            for (Map.Entry<String, Integer> entry : facInfo) {
+                String entryKey = entry.getKey();
+                Integer entryValue = entry.getValue();
+                if (entryValue > 0 && !entryKey.equals("") && !entryKey.equals("NA"))
+                    writer.write(entryKey + "\t" + entryValue + "\n");
+            }
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 获得某一个因子所在的列
+     *
+     * @param factor
+     * @return
+     */
+    private Integer getFactorCol(Sheet sheet, String factor) {
+        Integer colIndex = 0;
+        // 获取Sheet表中所包含的总列数
+        int rsColumns = sheet.getColumns();
+        // 获取Sheet表中所包含的总行数
+        int rsRows = sheet.getRows();
+        for (int col = 0; col < rsColumns; col++) {
+            String str = sheet.getCell(col, 0).getContents();
+            if (str.contains(factor)) {
+                colIndex = col;
+                return colIndex;
+            }
+        }
+        return colIndex;
+    }
+
     public static void main(String[] args) {
         CalDataGenerator calDataGenerator = new CalDataGenerator();
-        calDataGenerator.geneAreaStatics();
+        calDataGenerator.calAGFreqnenct();
     }
 }

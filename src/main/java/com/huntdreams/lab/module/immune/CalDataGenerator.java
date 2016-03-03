@@ -23,6 +23,8 @@ public class CalDataGenerator extends BaseProcessor {
     private String areaStaticsOutFile = docPath + "/immune/immune_area.txt";
     private String agStaticsOutFile = docPath + "/immune/immune_ag.txt";
     private String astStaticsOutFile = docPath + "/immune/immune_ast.txt";
+    private String altStaticsOutFile = docPath + "/immune/immune_alt.txt";
+    private String liaoStaticsOutFile = docPath + "/immune/immune_liao.txt";
 
     /* 区域统计数据 */
     private Map<String, Integer> areaStatics = new HashMap<String, Integer>();
@@ -33,6 +35,11 @@ public class CalDataGenerator extends BaseProcessor {
     /* AST 统计数据 */
     private Map<String, Integer> astStatics = new HashMap<String, Integer>();
 
+    /* ALT 统计数据 */
+    private Map<String, Integer> altStatics = new HashMap<String, Integer>();
+
+    /* 尿白蛋白 统计数据 */
+    private Map<String, Integer> liaoStatics = new HashMap<String, Integer>();
 
     /**
      * 初始化地区统计信息
@@ -219,11 +226,92 @@ public class CalDataGenerator extends BaseProcessor {
 
     /**
      * 将A/G统计结果写入文件
-     *
      */
     private void writeASTStatics() {
         astStatics = getAstStatics();
         writeFactorStatics(astStatics, astStaticsOutFile, "AST", "Count", false);
+    }
+
+    /**
+     * 获得ALT的统计数据
+     *
+     * @return
+     */
+    private Map<String, Integer> getAltStatics() {
+        Workbook readWb = null;
+        try {
+            // 直接从本地文件创建Workbook
+            InputStream readInputStream = new FileInputStream(baseFile);
+            readWb = Workbook.getWorkbook(readInputStream);
+            Integer sheetIndex = 1;
+            // 获取读Sheet表
+            Sheet readSheet = readWb.getSheet(sheetIndex);
+            Integer factorCol = getFactorCol(readSheet, "ALT");//因子所在的列
+            // 获取Sheet表中所包含的总列数
+            int rsColumns = readSheet.getColumns();
+            // 获取Sheet表中所包含的总行数
+            int rsRows = readSheet.getRows();
+            // 统计次数
+            for (int row = 1; row < rsRows; row++) {
+                String str = readSheet.getCell(factorCol, row).getContents();
+                Integer rawVal = altStatics.get(str) == null ? 0 : altStatics.get(str);
+                altStatics.put(str, rawVal + 1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            readWb.close();
+        }
+        return altStatics;
+    }
+
+    /**
+     * 将ALT统计结果写入文件
+     */
+    private void writeALTStatics() {
+        altStatics = getAltStatics();
+        writeFactorStatics(altStatics, altStaticsOutFile, "ALT", "Count", false);
+    }
+
+    /**
+     * 获得尿白蛋白的统计数据
+     *
+     * @return
+     */
+    private Map<String, Integer> getLiaoStatics() {
+        Workbook readWb = null;
+        try {
+            // 直接从本地文件创建Workbook
+            InputStream readInputStream = new FileInputStream(baseFile);
+            readWb = Workbook.getWorkbook(readInputStream);
+            Integer sheetIndex = 1;
+            // 获取读Sheet表
+            Sheet readSheet = readWb.getSheet(sheetIndex);
+            Integer factorCol = getFactorCol(readSheet, "尿白蛋白");//因子所在的列
+            // 获取Sheet表中所包含的总列数
+            int rsColumns = readSheet.getColumns();
+            // 获取Sheet表中所包含的总行数
+            int rsRows = readSheet.getRows();
+            // 统计次数
+            for (int row = 1; row < rsRows; row++) {
+                String str = readSheet.getCell(factorCol, row).getContents();
+                Integer rawVal = liaoStatics.get(str) == null ? 0 : liaoStatics.get(str);
+                liaoStatics.put(str, rawVal + 1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            readWb.close();
+        }
+        return liaoStatics;
+    }
+
+    /**
+     * 将尿白蛋白统计结果写入文件
+     */
+    private void writeLiaoStatics() {
+        liaoStatics = getLiaoStatics();
+        writeFactorStatics(liaoStatics, liaoStaticsOutFile, "尿白蛋白", "Count", false);
     }
 
     /**
@@ -269,7 +357,6 @@ public class CalDataGenerator extends BaseProcessor {
 
     /**
      * 将A/G统计结果写入文件
-     *
      */
     private void writeAGStatics() {
         agStatics = getAgStatics();
@@ -307,8 +394,8 @@ public class CalDataGenerator extends BaseProcessor {
      * 将因子统计结果写入文件
      *
      * @param factor 因子
-     * @param key 因子名
-     * @param value 因子值
+     * @param key    因子名
+     * @param value  因子值
      */
     private void writeFactorStatics(Map<String, Integer> factor, String fileName,
                                     String key, String value, boolean showHeader) {
@@ -329,7 +416,7 @@ public class CalDataGenerator extends BaseProcessor {
             for (Map.Entry<String, Integer> entry : facInfo) {
                 String entryKey = entry.getKey();
                 Integer entryValue = entry.getValue();
-                if (entryValue > 0 && !entryKey.equals("") && !entryKey.equals("NA"))
+                if (entryValue > 0 && filterStr(entryKey))
                     writer.write(entryKey + "\t" + entryValue + "\n");
             }
             writer.close();
@@ -360,8 +447,21 @@ public class CalDataGenerator extends BaseProcessor {
         return colIndex;
     }
 
+    /**
+     * 过滤字符串
+     *
+     * @param str
+     * @return
+     */
+    private boolean filterStr(String str) {
+        if (str.equals("") || str.equals("NA") || str.contains("+") || str.contains("-")
+                || str.contains("<"))
+            return false;
+        return true;
+    }
+
     public static void main(String[] args) {
         CalDataGenerator calDataGenerator = new CalDataGenerator();
-        calDataGenerator.writeASTStatics();
+        calDataGenerator.writeLiaoStatics();
     }
 }

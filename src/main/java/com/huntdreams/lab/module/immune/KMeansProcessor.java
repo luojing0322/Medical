@@ -25,6 +25,7 @@ public class KMeansProcessor extends BaseProcessor {
     private String baseFile = docPath + "/immune/immune.xls";
     private String kmeansOutFileImmune = docPath + "/immune/immune_kmeans_immune.xls";
     private String kmeansOutFileRegular = docPath + "/immune/immune_kmeans_regular.xls";
+    private String kmeansOutFile = docPath + "/immune/immune_kmeans.xls";
 
     /**
      * 生成kmeans聚类结果
@@ -103,6 +104,9 @@ public class KMeansProcessor extends BaseProcessor {
         return tmp;
     }
 
+    /**
+     * 得到kmeans结果并写入表格
+     */
     private void getKmeansResult() {
         Workbook readWb = null;
         WritableWorkbook wwb = null;
@@ -111,26 +115,9 @@ public class KMeansProcessor extends BaseProcessor {
             // 直接从本地文件创建Workbook
             InputStream readInputStream = new FileInputStream(baseFile);
             readWb = Workbook.getWorkbook(readInputStream);
-            wwb = Workbook.createWorkbook(new FileOutputStream(new File(kmeansOutFileRegular)));
-
-            Integer sheetIndex = 1;
-            Integer genSheetCnt = 0;
-            Integer startCol = 5;
-            Integer endCol = 43;
-
-            // 获取读Sheet表
-            Sheet readSheet = readWb.getSheet(sheetIndex);
-            logger.debug(readSheet.getName());
-            ArrayList<String> headers = getSheetHeaders(readSheet, startCol, endCol);
-            for (String fac : headers) {
-                ArrayList<Double> dataList = getColVals(readSheet, fac);
-                Double[] p = dataList.toArray(new Double[dataList.size()]);
-                //Double[] p = {1.0, 2.0, 3.0, 5.0, 6.0, 7.0, 9.0, 10.0, 11.0, 100.0, 150.0, 200.0, 1000.0};
-                int k = 5;//聚类的类别数
-                Double[][] g = cluster(p, k);
-                List<Double[]> clzResult = Arrays.asList(g);
-                facKmeansResult(wwb, ws, fac, clzResult, genSheetCnt++);
-            }
+            wwb = Workbook.createWorkbook(new FileOutputStream(new File(kmeansOutFile)));
+            Integer startIndex = genSheet(wwb, ws, readWb, 3, 5, 43, 0);
+            genSheet(wwb, ws, readWb, 4, 5, 14, startIndex);
             //写入Excel对象
             wwb.write();
             wwb.close();
@@ -139,6 +126,43 @@ public class KMeansProcessor extends BaseProcessor {
         } finally {
             readWb.close();
         }
+    }
+
+    /**
+     * 生成sheet
+     *
+     * @param wwb
+     * @param ws
+     * @param readWb
+     * @param sheetIndex
+     * @param startCol
+     * @param endCol
+     * @param startSheetIndex
+     * @return
+     */
+    private Integer genSheet(
+            WritableWorkbook wwb, WritableSheet ws, Workbook readWb,
+            Integer sheetIndex, Integer startCol,
+            Integer endCol, Integer startSheetIndex) {
+        Integer sheetCnt = startSheetIndex;
+        // 获取读Sheet表
+        Sheet readSheet = readWb.getSheet(sheetIndex);
+        logger.debug(readSheet.getName());
+        ArrayList<String> headers = getSheetHeaders(readSheet, startCol, endCol);
+        for (String fac : headers) {
+            ArrayList<Double> dataList = getColVals(readSheet, fac);
+            Double[] p = dataList.toArray(new Double[dataList.size()]);
+            //Double[] p = {1.0, 2.0, 3.0, 5.0, 6.0, 7.0, 9.0, 10.0, 11.0, 100.0, 150.0, 200.0, 1000.0};
+            int k = 5;//聚类的类别数
+            Double[][] g = cluster(p, k);
+            List<Double[]> clzResult = Arrays.asList(g);
+            try {
+                facKmeansResult(wwb, ws, fac, clzResult, sheetCnt++);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return sheetCnt;
     }
 
     private void testGenXsl() {

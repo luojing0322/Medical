@@ -6,7 +6,6 @@ import jxl.Workbook;
 import jxl.write.Label;
 import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
-import jxl.write.WriteException;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -99,7 +98,10 @@ public class KMeansProcessor extends BaseProcessor {
     private String filterHeader(String str) {
         int left = str.indexOf("(");
         // String tmp = str.substring(0, left);
-        String tmp = str.replace('/', ' ').trim();
+        String tmp = str.replace('/', ' ')
+                .replace('×', ' ')
+                .replace('％', ' ')
+                .trim();
         // logger.debug(tmp);
         return tmp;
     }

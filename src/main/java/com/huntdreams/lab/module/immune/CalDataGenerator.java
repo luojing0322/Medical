@@ -1,7 +1,6 @@
 package com.huntdreams.lab.module.immune;
 
 import com.huntdreams.lab.common.BaseProcessor;
-import com.sun.org.apache.bcel.internal.generic.ASTORE;
 import jxl.Sheet;
 import jxl.Workbook;
 
@@ -423,41 +422,6 @@ public class CalDataGenerator extends BaseProcessor {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    /**
-     * 获得某一个因子所在的列
-     *
-     * @param factor
-     * @return
-     */
-    private Integer getFactorCol(Sheet sheet, String factor) {
-        Integer colIndex = 0;
-        // 获取Sheet表中所包含的总列数
-        int rsColumns = sheet.getColumns();
-        // 获取Sheet表中所包含的总行数
-        int rsRows = sheet.getRows();
-        for (int col = 0; col < rsColumns; col++) {
-            String str = sheet.getCell(col, 0).getContents();
-            if (str.contains(factor)) {
-                colIndex = col;
-                return colIndex;
-            }
-        }
-        return colIndex;
-    }
-
-    /**
-     * 过滤字符串
-     *
-     * @param str
-     * @return
-     */
-    private boolean filterStr(String str) {
-        if (str.equals("") || str.equals("NA") || str.contains("+") || str.contains("-")
-                || str.contains("<"))
-            return false;
-        return true;
     }
 
     public static void main(String[] args) {

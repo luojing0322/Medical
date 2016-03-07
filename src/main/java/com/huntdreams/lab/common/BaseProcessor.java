@@ -1,5 +1,6 @@
 package com.huntdreams.lab.common;
 
+import jxl.Sheet;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -46,5 +47,41 @@ public class BaseProcessor {
         } catch (NumberFormatException ex) {
         }
         return false;
+    }
+
+
+    /**
+     * 获得某一个因子所在的列
+     *
+     * @param factor
+     * @return
+     */
+    public static Integer getFactorCol(Sheet sheet, String factor) {
+        Integer colIndex = 0;
+        // 获取Sheet表中所包含的总列数
+        int rsColumns = sheet.getColumns();
+        // 获取Sheet表中所包含的总行数
+        int rsRows = sheet.getRows();
+        for (int col = 0; col < rsColumns; col++) {
+            String str = sheet.getCell(col, 0).getContents();
+            if (str.contains(factor)) {
+                colIndex = col;
+                return colIndex;
+            }
+        }
+        return colIndex;
+    }
+
+    /**
+     * 过滤字符串
+     *
+     * @param str
+     * @return
+     */
+    public static boolean filterStr(String str) {
+        if (str.equals("") || str.equals("NA") || str.contains("+") || str.contains("-")
+                || str.contains("<"))
+            return false;
+        return true;
     }
 }

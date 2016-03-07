@@ -1,12 +1,13 @@
-package com.huntdreams.lab.module.immune;
+package com.huntdreams.lab.module.immune.util;
 
 public class Kmeans {
+
     /**
      * @param args
      */
     public static void main(String[] args) {
-        // TODO Auto-generated method stub
-        double[] p = { 1, 2, 3, 5, 6, 7, 9, 10, 11, 100, 150, 200, 1000 };
+        double[] p = {1, 2, 3, 5, 6, 7, 9, 10, 11, 100, 150, 200, 1000};
+
         int k = 5;//聚类的类别数
         double[][] g;
         g = cluster(p, k);
@@ -18,10 +19,15 @@ public class Kmeans {
             System.out.println();
         }
     }
-    /*
+
+    /**
      * 聚类函数主体。
      * 针对一维 double 数组。指定聚类数目 k。
      * 将数据聚成 k 类。
+     *
+     * @param p
+     * @param k
+     * @return
      */
     public static double[][] cluster(double[] p, int k) {
         // 存放聚类旧的聚类中心
@@ -56,18 +62,27 @@ public class Kmeans {
         // 返回聚类结果
         return g;
     }
-    /*
+
+    /**
      * 聚类中心函数
      * 简单的一维聚类返回其算数平均值
      * 可扩展
+     *
+     * @param p
+     * @return
      */
     public static double center(double[] p) {
         return sum(p) / p.length;
     }
-    /*
+
+    /**
      * 给定 double 型数组 p 和聚类中心 c。
      * 根据 c 将 p 中元素聚类。返回二维数组。
      * 存放各组元素。
+     *
+     * @param p
+     * @param c
+     * @return
      */
     public static double[][] group(double[] p, double[] c) {
         // 中间变量，用来分组标记
@@ -109,16 +124,23 @@ public class Kmeans {
         // 返回分组结果
         return g;
     }
- 
-    /*
+
+    /**
      * 计算两个点之间的距离， 这里采用最简单得一维欧氏距离， 可扩展。
+     *
+     * @param x
+     * @param y
+     * @return
      */
     public static double distance(double x, double y) {
         return Math.abs(x - y);
     }
- 
-    /*
+
+    /**
      * 返回给定 double 数组各元素之和。
+     *
+     * @param p
+     * @return
      */
     public static double sum(double[] p) {
         double sum = 0.0;
@@ -126,9 +148,12 @@ public class Kmeans {
             sum += p[i];
         return sum;
     }
- 
-    /*
+
+    /**
      * 给定 double 类型数组，返回最小值得下标。
+     *
+     * @param p
+     * @return
      */
     public static int min(double[] p) {
         int i = 0;
@@ -141,9 +166,14 @@ public class Kmeans {
         }
         return i;
     }
- 
-    /*
-     * 判断两个 double 数组是否相等。 长度一样且对应位置值相同返回真。
+
+    /**
+     * 判断两个 double 数组是否相等。
+     * 长度一样且对应位置值相同返回真。
+     *
+     * @param a
+     * @param b
+     * @return
      */
     public static boolean equal(double[] a, double[] b) {
         if (a.length != b.length)

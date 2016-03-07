@@ -10,6 +10,7 @@ import jxl.write.WritableWorkbook;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -41,16 +42,27 @@ public class KMeansProcessor extends BaseProcessor {
             //ws = wwb.createSheet(cnt.toString(), cnt);
             for (int i = 0, size = clzResult.size(); i < size; i++) {
                 Double[] oneClz = clzResult.get(i);
-                Double minD = minDouble(oneClz);
-                Double maxD = maxDouble(oneClz);
-                String minMaxStr = "[" + minD + "-" + maxD + "]";
-                Label minMax = new Label(i, 0, minMaxStr);
-                if (oneClz.length > 0)
+                // 从小到大进行排序
+                // JDK7报错
+                System.setProperty("java.util.Arrays.useLegacyMergeSort", "true");
+                Arrays.sort(oneClz, new Comparator<Double>() {
+                    public int compare(Double o1, Double o2) {
+                        return o1 > o2 ? 1 : -1;
+                    }
+                });
+                if (oneClz.length > 0) {
+                    Double minD = oneClz[0];
+                    Double maxD = oneClz[oneClz.length - 1];
+                    Double midD = oneClz[oneClz.length / 2];
+                    String minMaxStr = midD + "[" + minD + "-" + maxD + "]";
+                    Label minMax = new Label(i, 0, minMaxStr);
+
                     ws.addCell(minMax);
-                logger.debug(minMaxStr);
-                for (int j = 0; j < oneClz.length; j++) {
-                    Label label = new Label(i, j + 1, String.valueOf(oneClz[j]));
-                    ws.addCell(label);
+                    logger.debug(minMaxStr);
+                    for (int j = 0; j < oneClz.length; j++) {
+                        Label label = new Label(i, j + 1, String.valueOf(oneClz[j]));
+                        ws.addCell(label);
+                    }
                 }
             }
         } catch (Exception e) {
